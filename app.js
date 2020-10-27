@@ -10,6 +10,7 @@ const xss = require('xss-clean');
 const hpp = require('hpp');
 const cookieParser = require('cookie-parser');
 const compression = require('compression');
+const cors = require('cors');
 
 const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controllers/errorController');
@@ -29,6 +30,25 @@ app.set('view engine', 'pug');
 app.set('views', path.join(__dirname, 'views'));
 
 // 1) GLOBAL MIDDLEWARE
+// Implement CORS
+app.use(cors());
+// This sets the header 'Access-Control-Allow-Origin' to '*'
+
+// We could also restrict cors to only selected domains, e.g.
+// API served on api.natours.com, front-end on natours.com
+// app.use(cors({
+//   origin: 'https://www.natours.com'
+// }))
+
+// For non-simple http requests (patch, put and delete), the browser issues a
+// pre-flight phase and sends an options request (another method like get or
+// patch) and if it receives the 'Access-Control-Allow-Origin' header, then it
+// knows it is safe to continue the request.
+app.options('*', cors());
+
+// We could also only allow to access a certain route from other domains.
+// app.options('/api/v1/tours/:id', cors());
+
 // Serving static files
 app.use(express.static(path.join(__dirname, 'public')));
 
