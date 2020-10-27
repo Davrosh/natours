@@ -28,7 +28,7 @@ const createSendToken = (user, statusCode, req, res) => {
     // support for https.
     // Heroku does not support req.secure, so, we instead need to check this
     // header, which we enable in app.js.
-    secure: req.secure || req.headers('x-forwarded-proto') === 'https',
+    secure: req.secure || req.headers['x-forwarded-proto'] === 'https',
   });
 
   // Remove the user from the output
