@@ -1,9 +1,14 @@
 const express = require('express');
 const viewsController = require('../controllers/viewsController');
 const authController = require('../controllers/authController');
-const bookingController = require('../controllers/bookingController');
+// const bookingController = require('../controllers/bookingController');
 
 const router = express.Router();
+
+// We implement a reusable solution where we pass information to the front end
+// via the query string, which we can then use to display certain messages in
+// the front-end javascript code.
+router.use(viewsController.alerts);
 
 // router.get('/', (req, res) => {
 //   res.status(200).render('base', {
@@ -15,7 +20,7 @@ const router = express.Router();
 // when receiving a successful payment for a tour, we are redirected to the
 // homepage and that is the point in time where we want to create a new booking.
 // This workaround is no longer needed after migrating to the Stripe Webhook
-// solution. 
+// solution.
 router.get(
   '/',
   // bookingController.createBookingCheckout,

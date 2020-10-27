@@ -4,7 +4,8 @@ import '@babel/polyfill';
 import { displayMap } from './mapbox';
 import { login, logout } from './login';
 import { updateSettings } from './updateSettings';
-import {bookTour} from './stripe';
+import { bookTour } from './stripe';
+import { showAlert } from './alerts';
 
 // DOM ELEMENTS
 const mapBox = document.getElementById('map');
@@ -42,7 +43,7 @@ if (logOutBtn) {
 //     form.append('name', document.getElementById('name').value)
 //     form.append('email', document.getElementById('email').value)
 //     form.append('photo', document.getElementById('photo').files[0])
-    
+
 //     // console.log(form);
 //     // const name = document.getElementById('name').value;
 //     // const email = document.getElementById('email').value;
@@ -51,7 +52,6 @@ if (logOutBtn) {
 //     updateSettings(form, 'data');
 //   });
 // }
-
 
 if (userDataForm) {
   const elemUpload = userDataForm.querySelector('.form__upload');
@@ -118,11 +118,16 @@ if (userPasswordForm) {
   });
 }
 
-if(bookBtn) {
-  bookBtn.addEventListener('click', e => {
+if (bookBtn) {
+  bookBtn.addEventListener('click', (e) => {
     e.target.textContent = 'Processing...';
     // data-tour-id gets automatically converted to dataset.tourId
-    const {tourId} = e.target.dataset;
+    const { tourId } = e.target.dataset;
     bookTour(tourId);
-  })
+  });
+}
+
+const alertMessage = document.querySelector('body').dataset.alert;
+if(alertMessage) {
+  showAlert('success', alertMessage, 20);
 }
