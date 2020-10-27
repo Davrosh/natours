@@ -67,6 +67,14 @@ process.on('unhandledRejection', (err) => {
   });
 });
 
-
+// Respond to a SIGTERM - Heroku sends this to our app once every 24 hours, when
+// that happens we need to shut down gracefully and handle all previous requests
+// using server.close() instead of terminating abruptly.
+process.on('SIGTERM', () => {
+  console.log('☕ Shutting down gracefully...');
+  server.close(() => {
+    console.log('⛄ Process terminated!');
+  });
+});
 
 // console.log(x);

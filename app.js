@@ -21,6 +21,10 @@ const viewRouter = require('./routes/viewRoutes');
 
 const app = express();
 
+// helps with Heroku deployment - sets a header that we can check when we send a
+// secure cookie in Heroku.
+app.enable('set proxy');
+
 app.set('view engine', 'pug');
 app.set('views', path.join(__dirname, 'views'));
 
