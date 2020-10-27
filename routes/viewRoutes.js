@@ -14,9 +14,11 @@ const router = express.Router();
 
 // when receiving a successful payment for a tour, we are redirected to the
 // homepage and that is the point in time where we want to create a new booking.
+// This workaround is no longer needed after migrating to the Stripe Webhook
+// solution. 
 router.get(
   '/',
-  bookingController.createBookingCheckout,
+  // bookingController.createBookingCheckout,
   authController.isLoggedIn,
   viewsController.getOverview
 );
