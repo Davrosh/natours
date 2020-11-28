@@ -29,8 +29,20 @@ router.get(
 );
 router.patch(
   '/updateMe',
-  /*authController.protect,*/ userController.uploadUserPhoto,
-  userController.resizeUserPhoto,
+
+  /*authController.protect,*/
+  userController.uploadUserPhoto,
+  (req, res, next) => {
+    console.log(req.file.buffer.toString('base64'));
+    next();
+  },
+  // Now, thanks to multer, req.file will hold
+  // the uploaded file info - buffer is the file itself.
+  // The body-parser middleware does not know how to parse multipart - the way
+  // we send files in requests, but multer does.
+
+  userController.cloudinaryUpload,
+  /*userController.resizeUserPhoto,*/
   userController.updateMe
 );
 router.delete('/deleteMe', /*authController.protect,*/ userController.deleteMe);

@@ -1,5 +1,7 @@
 const multer = require('multer');
 const sharp = require('sharp');
+const cloudinary = require('cloudinary').v2;
+const streamifier = require('streamifier');
 const User = require('../models/userModel');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
@@ -40,7 +42,45 @@ const upload = multer({
 
 exports.uploadUserPhoto = upload.single('photo');
 
-exports.resizeUserPhoto = catchAsync( async (req, res, next) => {
+exports.cloudinaryUpload = catchAsync(async (req, res, next) => {
+  if (!req.file) {
+    return next();
+  }
+
+  req.file.filename = `user-${req.user.id}`;
+
+  const streamUpload = (req) => {
+    return new Promise((resolve, reject) => {
+      const stream = cloudinary.uploader.upload_stream(
+        {
+          public_id: `natours/user_photos/${req.file.filename}`,
+          overwrite: true,
+          //async: true,
+          eager: [{ width: 500, height: 500, gravity: 'faces', crop: 'fill' }],
+          //eager_async: true,
+          format: 'jpeg',
+        },
+        (err, data) => {
+          if (data) {
+            resolve(data);
+          } else {
+            reject(err);
+          }
+        }
+      );
+
+      streamifier.createReadStream(req.file.buffer).pipe(stream);
+    });
+  };
+
+  const data = await streamUpload(req);
+
+  console.log(data);
+
+  next();
+});
+
+exports.resizeUserPhoto = catchAsync(async (req, res, next) => {
   if (!req.file) {
     return next();
   }
