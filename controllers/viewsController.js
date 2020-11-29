@@ -1,8 +1,25 @@
+const cloudinary = require('cloudinary').v2;
 const Tour = require('../models/tourModel');
 const User = require('../models/userModel');
 const Booking = require('../models/bookingModel');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
+
+const getCloudinaryUrl = (doc) => {
+  return cloudinary.url(doc.photo, {
+    transformation: [
+      { width: 500, height: 500, gravity: 'faces', crop: 'fill' },
+      { quality: 'auto', fetch_format: 'auto' },
+    ],
+    secure: true,
+  });
+};
+
+exports.plugRequires = (req, res, next) => {
+  res.locals.cloudinary = cloudinary;
+  res.locals.getCloudinaryUrl = getCloudinaryUrl;
+  next();
+};
 
 exports.alerts = (req, res, next) => {
   const { alert } = req.query;

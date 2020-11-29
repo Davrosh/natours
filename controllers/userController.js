@@ -47,13 +47,13 @@ exports.cloudinaryUpload = catchAsync(async (req, res, next) => {
     return next();
   }
 
-  req.file.filename = `user-${req.user.id}`;
+  req.file.filename = `natours/user_photos/user-${req.user.id}`;
 
   const streamUpload = (req) => {
     return new Promise((resolve, reject) => {
       const stream = cloudinary.uploader.upload_stream(
         {
-          public_id: `natours/user_photos/${req.file.filename}`,
+          public_id: `${req.file.filename}`,
           overwrite: true,
           //async: true,
           eager: [{ width: 500, height: 500, gravity: 'faces', crop: 'fill' }],
@@ -73,9 +73,26 @@ exports.cloudinaryUpload = catchAsync(async (req, res, next) => {
     });
   };
 
-  const data = await streamUpload(req);
+  // const data = await streamUpload(req);
 
-  console.log(data);
+  // console.log(data);
+
+  // const image = cloudinary.url(req.file.filename, {
+  //   transformation: [
+  //     {
+  //       width: 500,
+  //       height: 500,
+  //       gravity: 'faces',
+  //       crop: 'fill',
+  //     },
+  //     { quality: 'auto', fetch_format: 'auto' },
+  //   ],
+  //   secure: true,
+  // });
+
+  // console.log(image);
+
+  await streamUpload(req);
 
   next();
 });
@@ -154,6 +171,8 @@ exports.updateMe = catchAsync(async (req, res, next) => {
 
   if (req.file) {
     filteredBody.photo = req.file.filename;
+
+    filteredBody.remoteSaved = true;
   }
 
   // 3) Update user document

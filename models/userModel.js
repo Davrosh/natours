@@ -52,6 +52,11 @@ const userSchema = new mongoose.Schema(
       default: true,
       select: false,
     },
+    remoteSaved: {
+      type: Boolean,
+      //default: true,
+      //select: false,
+    },
   },
   {
     toJSON: {

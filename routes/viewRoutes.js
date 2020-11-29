@@ -5,9 +5,10 @@ const authController = require('../controllers/authController');
 
 const router = express.Router();
 
-// How do we pass information to the front-end? Notice how each route starts
+// IMPORTANT: How do we pass information to the front-end? Notice how each route starts
 // with either isLoggedIn or protect which set res.locals fields like user which
 // the front-end can then access in that request.
+router.use(viewsController.plugRequires);
 
 // We implement a reusable solution where we pass information to the front end
 // via the query string, which we can then use to display certain messages in

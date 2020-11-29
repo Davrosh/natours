@@ -51,7 +51,12 @@ block content
                     h2.heading-secondary.ma-bt-lg Your tour guides
                     each guide in tour.guides
                         .overview-box__detail
-                            img.overview-box__img(src=`/img/users/${guide.photo}`, alt=`${guide.name}`)
+                            - if(guide.remoteSaved)
+                                - const image = getCloudinaryUrl(guide);
+                                img.overview-box__img(src=`${image}`, alt=`${guide.name}`)    
+                            - else
+                                img.overview-box__img(src=`/img/users/${guide.photo}`, alt=`${guide.name}`)
+
                             - if(guide.role === 'lead-guide')
                                 span.overview-box__label Lead guide
                             - if(guide.role === 'guide')
