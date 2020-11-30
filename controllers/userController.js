@@ -49,12 +49,14 @@ exports.cloudinaryUpload = catchAsync(async (req, res, next) => {
 
   req.file.filename = `natours/user_photos/user-${req.user.id}`;
 
+  // promise-based wrapper around callback API
   const streamUpload = (req) => {
     return new Promise((resolve, reject) => {
       const stream = cloudinary.uploader.upload_stream(
         {
           public_id: `${req.file.filename}`,
           overwrite: true,
+          invalidate: true,
           //async: true,
           eager: [{ width: 500, height: 500, gravity: 'faces', crop: 'fill' }],
           //eager_async: true,
@@ -69,6 +71,7 @@ exports.cloudinaryUpload = catchAsync(async (req, res, next) => {
         }
       );
 
+      // upload from the image buffer we got from multer
       streamifier.createReadStream(req.file.buffer).pipe(stream);
     });
   };
@@ -92,11 +95,15 @@ exports.cloudinaryUpload = catchAsync(async (req, res, next) => {
 
   // console.log(image);
 
-  await streamUpload(req);
+  // upload pic and get its current version
+  const data = await streamUpload(req);
 
+  // keep the version in the DB too for later, when we serve it on the page
+  req.file.filename = `${data.version}/${req.file.filename}`;
   next();
 });
 
+// currently deprecated
 exports.resizeUserPhoto = catchAsync(async (req, res, next) => {
   if (!req.file) {
     return next();
@@ -172,6 +179,8 @@ exports.updateMe = catchAsync(async (req, res, next) => {
   if (req.file) {
     filteredBody.photo = req.file.filename;
 
+    // from now on, use cloudinary to serve pics and we mark the users that have
+    // their pics stored remotely on cloudinary like this.
     filteredBody.remoteSaved = true;
   }
 
