@@ -1,11 +1,16 @@
 /* eslint-disable */
-
 import '@babel/polyfill';
+//import dotenv from 'dotenv';
+import getCloudinaryUrl from './../../utils/getCloudinaryUrl';
+// import { Cloudinary } from 'cloudinary-core';
 import { displayMap } from './mapbox';
 import { login, logout } from './login';
 import { updateSettings } from './updateSettings';
 import { bookTour } from './stripe';
 import { showAlert } from './alerts';
+
+//dotenv.config({ path: './../../.env' });
+
 
 // DOM ELEMENTS
 const mapBox = document.getElementById('map');
@@ -89,11 +94,26 @@ if (userDataForm) {
     const res = await updateSettings(form, 'data');
     document.querySelector('.btn--save-settings').textContent = 'Save settings';
 
+    const user = res.data.data.user;
+
+    let image;
+    // IMPORTANT: this code reoccurs throughout the app - here and in the pug
+    // templates. 
+    // remoteSaved is a value on the user model. It is undefined for 'legacy
+    // users', or rather users who have their profile pic in the img/users
+    // folder. Users who change their profile pics from now on will have them
+    // served from Cloudinary and their remoteSaved entry set to 'true'.
+    // This feature was meant to bypass the Heroku platform deleting profile
+    // pics uploaded to their servers.
+    if (user.remoteSaved) {
+      image = getCloudinaryUrl(user);
+    }
+
     //change user photo without reloading the page.
-    elemUserPhoto.src = `img/users/${res.data.data.user.photo}`;
-    document.querySelector(
-      '.nav__user-img'
-    ).src = `img/users/${res.data.data.user.photo}`;
+    elemUserPhoto.src = user.remoteSaved ? image : `img/users/${user.photo}`;
+    document.querySelector('.nav__user-img').src = user.remoteSaved
+      ? image
+      : `img/users/${user.photo}`;
   });
 }
 
@@ -128,6 +148,6 @@ if (bookBtn) {
 }
 
 const alertMessage = document.querySelector('body').dataset.alert;
-if(alertMessage) {
+if (alertMessage) {
   showAlert('success', alertMessage, 20);
 }

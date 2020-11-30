@@ -1,22 +1,30 @@
-const cloudinary = require('cloudinary').v2;
+// const cloudinary = require('cloudinary').v2;
+const getCloudinaryUrl = require('../utils/getCloudinaryUrl');
 const Tour = require('../models/tourModel');
 const User = require('../models/userModel');
 const Booking = require('../models/bookingModel');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
 
-const getCloudinaryUrl = (doc) => {
-  return cloudinary.url(doc.photo, {
-    transformation: [
-      { width: 500, height: 500, gravity: 'faces', crop: 'fill' },
-      { quality: 'auto', fetch_format: 'auto' },
-    ],
-    secure: true,
-  });
-};
+// const getCloudinaryUrl = (doc) => {
+//   // split with respect to the first '/'
+//   const [version, url] = doc.photo.split(/\/(.+)/);
+//   //console.log(version, url);
+//   return cloudinary.url(url, {
+//     transformation: [
+//       { width: 500, height: 500, gravity: 'faces', crop: 'fill' },
+//       { quality: 'auto', fetch_format: 'auto' },
+//     ],
+//     secure: true,
+//     version: version,
+//   });
+// };
 
+// IMPORTANT: here we can plug variables to have ready for use inside pug
+// templates.
 exports.plugRequires = (req, res, next) => {
-  res.locals.cloudinary = cloudinary;
+  // res.locals.cloudinary = cloudinary;
+
   res.locals.getCloudinaryUrl = getCloudinaryUrl;
   next();
 };
